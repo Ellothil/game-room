@@ -1,19 +1,31 @@
 // server/src/db/index.ts
 /** biome-ignore-all lint/suspicious/noConsole: <false positive> */
 import { Pool } from "pg";
+import dotenv from "dotenv";
 
-// The Pool will use the default environment variables for connection,
-// which Docker Compose conveniently provides.
-// Or you can specify them:
-const pool = new Pool({
-  user: "robo_user",
-  host: "localhost",
-  database: "roborally",
-  password: "robo_password",
-  port: 5432,
+// Load environment variables
+dotenv.config();
+
+const config = {
+  user: process.env.DB_USER || "robo_user",
+  password: process.env.DB_PASSWORD || "robo_password", 
+  host: process.env.DB_HOST || "localhost",
+  port: Number.parseInt(process.env.DB_PORT || "5432", 10),
+  database: process.env.DB_DATABASE || "roborally",
+};
+
+console.log("🔧 Database configuration:", {
+  ...config,
+  password: "***hidden***"
 });
 
-console.log("🐘 PostgreSQL connection pool created.");
+const pool = new Pool(config);
+
+// Add error handling for the pool
+pool.on('error', (err) => {
+  console.error('❌ Unexpected database error:', err);
+  process.exit(-1);
+});
 
 // We export a query function that uses a client from the pool
 export const query = (text: string, params?: any[]) => pool.query(text, params);
