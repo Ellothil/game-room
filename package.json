@@ -13,5 +13,9 @@
   "packageManager": "pnpm@10.15.0",
   "dependencies": {
     "concurrently": "^9.2.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.4",
+    "ultracite": "5.4.4"
   }
 }
