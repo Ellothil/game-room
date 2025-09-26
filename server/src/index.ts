@@ -4,7 +4,7 @@ import { createServer } from "node:http";
 import dotenv from "dotenv";
 import express from "express";
 import { Server } from "socket.io";
-import { query } from "./db"; // Import our database query function
+import { query } from "./postgres"; // Import our database connection function
 import { connectRedis } from "./redis"; // Import our Redis connection function
 
 // Load environment variables
@@ -57,11 +57,12 @@ const startServer = async () => {
   await connectRedis();
 
   // Test database connection
-  try {
-    await query("SELECT NOW()");
-    console.log("🐘 PostgreSQL connected successfully!");
-  } catch (error) {
-    console.error("❌ PostgreSQL connection failed:", error);
+  const result = await query("SELECT 1");
+  // Log if connection was successful with icons
+  if (result.rowCount === 1) {
+    console.log("⚡️Postgres connection successful");
+  } else {
+    console.error("❌ Postgres connection failed");
   }
 
   server.listen(PORT, () => {
