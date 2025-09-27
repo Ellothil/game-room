@@ -6,17 +6,22 @@ import dotenv from "dotenv";
 import express from "express";
 import { testConnection } from "./postgres";
 import { connectRedis } from "./redis";
-import { io } from "./websocket/index";
+import { initSocketServer } from "./websocket/socket"; // 👈 Import the new initializer
 
-dotenv.config({ override: true, path: path.join(__dirname, "../../.env") });
+// Load environment variables from the root .env file
+dotenv.config({ path: path.resolve(__dirname, "../../client/.env") });
+
 const app = express();
-const server = createServer(app);
+const server = createServer(app); // 👈 The single HTTP server
 
-const PORT = Number(process.env.PORT);
+// Attach Socket.IO to the server
+initSocketServer(server);
+
+const PORT = process.env.PORT;
 
 app.use(
   cors({
-    origin: `${process.env.SOCKET_URL}:${process.env.SOCKET_PORT}`,
+    origin: `${process.env.VITE_CLIENT_URL}:${process.env.VITE_CLIENT_PORT}`,
     methods: ["GET", "POST"],
   })
 );
@@ -25,63 +30,12 @@ app.get("/", (_req, res) => {
   res.send("Server is running!");
 });
 
-const LISTENING_REGEX = /LISTENING\s+(\d+)/;
-
 const startServer = async () => {
-  // Force kill any existing process on the port (Windows specific)
-  try {
-    const { execSync } = require("node:child_process");
-    const result = execSync(`netstat -ano | findstr :${PORT}`, {
-      encoding: "utf8",
-    });
-    const lines = result.trim().split("\n");
-    for (const line of lines) {
-      const match = line.match(LISTENING_REGEX);
-      if (match) {
-        const pid = match[1];
-        try {
-          execSync(`taskkill /PID ${pid} /F`, { stdio: "ignore" });
-          console.log(`Killed process ${pid} using port ${PORT}`);
-        } catch (killError) {
-          console.log(`Could not kill process ${pid}: ${killError}`);
-        }
-      }
-    }
-  } catch (_error) {
-    // No process found on port, this is expected
-  }
-
-  // Connect to Redis before starting the server
   await connectRedis();
-
-  // Test database connection
-  testConnection();
-  // Log if connection was successful with icons
-  // if (result.rowCount === 1) {
-  //   console.log("⚡️Postgres connection successful");
-  // } else {
-  //   console.error("❌ Postgres connection failed");
-  // }
+  await testConnection();
 
   server.listen(PORT, () => {
     console.log(`🚀 Server listening on http://localhost:${PORT}`);
-  });
-
-  // Graceful shutdown handling
-  process.on("SIGTERM", () => {
-    console.log("SIGTERM received, shutting down gracefully");
-    server.close(() => {
-      console.log("Server closed");
-      process.exit(0);
-    });
-  });
-
-  process.on("SIGINT", () => {
-    console.log("SIGINT received, shutting down gracefully");
-    server.close(() => {
-      console.log("Server closed");
-      process.exit(0);
-    });
   });
 };
 

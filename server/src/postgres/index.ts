@@ -4,7 +4,10 @@ import path from "node:path";
 import dotenv from "dotenv";
 import { Pool } from "pg";
 
-dotenv.config({ override: true, path: path.join(__dirname, "../../.env") });
+dotenv.config({
+  override: true,
+  path: path.join(__dirname, "../../../client/.env"),
+});
 
 const pool = new Pool({
   host: process.env.DB_HOST,
