@@ -72,12 +72,4 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-// authRouter.get("/me", async (req, res) => {
-//   res.send("Me");
-// });
-
-authRouter.post("/logout", async (req, res) => {
-  res.send("Logout");
-});
-
 export default authRouter;

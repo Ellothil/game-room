@@ -3,7 +3,7 @@ import axios from "axios";
 const API_TIMEOUT = 10_000; // 10 second timeout
 const UNAUTHORIZED_STATUS = 401;
 
-// Create axios instance with base URL  
+// Create axios instance with base URL
 export const api = axios.create({
   // biome-ignore lint: axios requires baseURL property name
   baseURL: "http://localhost:4001",

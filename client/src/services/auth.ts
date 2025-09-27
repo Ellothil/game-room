@@ -7,3 +7,11 @@ export async function registerUser(username: string, password: string) {
   });
   return response;
 }
+
+export async function loginUser(username: string, password: string) {
+  const response = await api.post("/auth/login", {
+    username,
+    password,
+  });
+  return response;
+}

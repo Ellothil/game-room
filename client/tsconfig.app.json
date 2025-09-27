@@ -8,7 +8,6 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
 
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
@@ -23,10 +22,10 @@
       "@components/*": ["./src/components/*"],
       "@assets/*": ["./src/assets/*"],
       "@features/*": ["./src/features/*"],
-      "@util/*": ["./src/util/*"]
+      "@util/*": ["./src/util/*"],
+      "@services/*": ["./src/services/*"]
     },
 
-    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

@@ -18,7 +18,8 @@
       "@components/*": ["./src/components/*"],
       "@assets/*": ["./src/assets/*"],
       "@features/*": ["./src/features/*"],
-      "@util/*": ["./src/util/*"]
+      "@util/*": ["./src/util/*"],
+      "@services/*": ["./src/services/*"]
     }
   }
 }
