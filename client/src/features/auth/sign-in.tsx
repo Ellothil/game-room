@@ -1,3 +1,5 @@
+import axios from "axios";
+import { toast } from "sonner";
 import { registerUser } from "../../services/auth";
 
 export function SignInPage() {
@@ -6,7 +8,14 @@ export function SignInPage() {
     const formData = new FormData(e.currentTarget);
     const username: string = formData.get("username") as string;
     const password: string = formData.get("password") as string;
-    await registerUser(username, password);
+    try {
+      const response = await registerUser(username, password);
+      toast(response.data.message);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast(error.response?.data.error);
+      }
+    }
   };
 
   return (
