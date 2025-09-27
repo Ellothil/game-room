@@ -1,30 +1,28 @@
 /** biome-ignore-all lint/suspicious/noConsole: false positive */
-
 import { createServer } from "node:http";
+import path from "node:path";
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import { Server } from "socket.io";
-import { query } from "./postgres"; // Import our database connection function
-import { connectRedis } from "./redis"; // Import our Redis connection function
+import { testConnection } from "./postgres";
+import { connectRedis } from "./redis";
+import { io } from "./websocket/index";
 
-// Load environment variables
-dotenv.config();
+dotenv.config({ override: true, path: path.join(__dirname, "../../.env") });
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
 
-const DEFAULT_PORT = 4001;
-const PORT = process.env.PORT || DEFAULT_PORT;
+const PORT = Number(process.env.PORT);
+
+app.use(
+  cors({
+    origin: `${process.env.SOCKET_URL}:${process.env.SOCKET_PORT}`,
+    methods: ["GET", "POST"],
+  })
+);
 
 app.get("/", (_req, res) => {
   res.send("Server is running!");
-});
-
-io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
 });
 
 const LISTENING_REGEX = /LISTENING\s+(\d+)/;
@@ -57,13 +55,13 @@ const startServer = async () => {
   await connectRedis();
 
   // Test database connection
-  const result = await query("SELECT 1");
+  testConnection();
   // Log if connection was successful with icons
-  if (result.rowCount === 1) {
-    console.log("⚡️Postgres connection successful");
-  } else {
-    console.error("❌ Postgres connection failed");
-  }
+  // if (result.rowCount === 1) {
+  //   console.log("⚡️Postgres connection successful");
+  // } else {
+  //   console.error("❌ Postgres connection failed");
+  // }
 
   server.listen(PORT, () => {
     console.log(`🚀 Server listening on http://localhost:${PORT}`);

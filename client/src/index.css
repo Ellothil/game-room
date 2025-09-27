@@ -1,22 +1,8 @@
+/** biome-ignore-all lint/suspicious/noUnknownAtRules: false positive */
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-
-/* biome-ignore lint/suspicious/noUnknownAtRules: false positive */
-@theme {
-  --color-primary: #2563eb;
-  --color-primary-hover: #2563eb;
-  --color-secondary: #ef4444;
-  --color-secondary-hover: #ef4444;
-  --color-tertiary: #f59e0b;
-  --color-tertiary-hover: #f59e0b;
-
-  /* very light grey */
-  --color-foreground: #f1f5f9;
-  /* very dark grey */
-  --color-background: #1e293b;
-}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -123,6 +109,20 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+@theme {
+  --color-primary: #2563eb;
+  --color-primary-hover: #2563eb;
+  --color-secondary: #ef4444;
+  --color-secondary-hover: #ef4444;
+  --color-tertiary: #f59e0b;
+  --color-tertiary-hover: #f59e0b;
+
+  /* very light grey */
+  --color-foreground: #f1f5f9;
+  /* very dark grey */
+  --color-background: #1e293b;
 }
 
 @layer base {

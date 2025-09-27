@@ -36,6 +36,9 @@ importers:
       react-dom:
         specifier: ^19.1.1
         version: 19.1.1(react@19.1.1)
+      shared:
+        specifier: ^0.2.0
+        version: 0.2.0
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.1
@@ -45,6 +48,9 @@ importers:
       tailwindcss:
         specifier: ^4.1.13
         version: 4.1.13
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
       zustand:
         specifier: ^5.0.8
         version: 5.0.8(@types/react@19.1.13)(react@19.1.1)
@@ -100,6 +106,9 @@ importers:
       redis:
         specifier: ^5.8.2
         version: 5.8.2
+      shared:
+        specifier: ^0.2.0
+        version: 0.2.0
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1
@@ -1018,6 +1027,9 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
+  bintrees@0.0.10:
+    resolution: {integrity: sha512-BkR37mfNUjTN36dENR1V6BlW8rqzpJnqCBhe2ZtWXJ1UgTVPHIlWSfYX7Ap/FlAgl7XWRr3mG4eR2LFnezBG1g==}
+
   body-parser@2.2.0:
     resolution: {integrity: sha512-02qvAaxv8tp7fBa/mw1ga98OGm+eCbqzJOKoRt70sLmfEEi+jyBYVTDGfCL/k06/4EMk/z01gCe7HoCH/f2LTg==}
     engines: {node: '>=18'}
@@ -1036,6 +1048,16 @@ packages:
     resolution: {integrity: sha512-ECFzp6uFOSB+dcZ5BK/IBaGWssbSYBHvuMeMt3MMFyhI0Z8SqGgEkBLARgpRH3hutIgPVsALcMwbDrJqPxQ65A==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
+
+  bson@0.1.8:
+    resolution: {integrity: sha512-Zen/6PF3Mox895jY2kVBC8m/zbApUgUoGwQ7p+UqdcByls5aYNgE4CrpXgycsPcMio+wto6nRvhJlJuZr5hxBw==}
+    engines: {node: '>=0.6.19'}
+    deprecated: Fixed a critical issue with BSON serialization documented in CVE-2019-2391, see https://bit.ly/2KcpXdo for more details
+
+  bson@0.1.9:
+    resolution: {integrity: sha512-HlvXnohuuxlb/AzILVZFgGBO7658NPddPn1Q8PRC6ANHoPZKJotU0WG9+PoMjO7ZFM/e+jKbqOstXJLyIhSOgA==}
+    engines: {node: '>=0.6.19'}
+    deprecated: Fixed a critical issue with BSON serialization documented in CVE-2019-2391, see https://bit.ly/2KcpXdo for more details
 
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
@@ -1719,6 +1741,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  mongodb@1.2.14:
+    resolution: {integrity: sha512-6e+wAdsDC8LXAiDd8hyvs3PelKsJC/zIuNehU3FeI4JidhoYW2CG3jGTshg9MI8UKPrcyB8sqY0blpRFPYPLSg==}
+    engines: {node: '>=0.6.19'}
+    deprecated: Please upgrade to 2.2.19 or higher
+
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
@@ -1740,6 +1767,10 @@ packages:
 
   node-releases@2.0.21:
     resolution: {integrity: sha512-5b0pgg78U3hwXkCM8Z9b2FJdPZlr9Psr9V2gQPESdGHqbntyFJKFW4r5TeWGFzafGY3hzs1JC62VEQMbl1JFkw==}
+
+  node-uuid@1.3.3:
+    resolution: {integrity: sha512-xKQtL5imfvX6PvUmgJyU/XaNT/l8tKvs+sJ6KLOmIzk/H8+sm7uE80QlPmmu3l1uirvRL3kZqtJPWoQBWT9gQw==}
+    deprecated: Use uuid module instead
 
   nodemon@3.1.10:
     resolution: {integrity: sha512-WDjw3pJ0/0jMFmyNDp3gvY2YizjLmmOUQo6DEBY+JgdvW/yQ9mEeSw6H5ythl5Ny2ytb7f9C2nIbjSxMNzbJXw==}
@@ -2000,6 +2031,11 @@ packages:
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
 
+  shared@0.2.0:
+    resolution: {integrity: sha512-nRBVf7KHFkU4vmiKAhTaJUm8miFMcU6b5I98U71Kk6uu1RIBeRwWivnMXEQOQxTxObPhOSIQSBhuIT+O/urG3A==}
+    bundledDependencies:
+      - rsvp
+
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
     engines: {node: '>=8'}
@@ -2238,6 +2274,9 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
+  tw-animate-css@1.4.0:
+    resolution: {integrity: sha512-7bziOlRqH0hJx80h/3mbicLW7o8qLsH5+RaLR2t+OHM3D0JlWGODQKQ4cxbK7WlvmUxpcj6Kgu6EKqjrGFe3QQ==}
+
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -2264,6 +2303,9 @@ packages:
 
   undefsafe@2.0.5:
     resolution: {integrity: sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==}
+
+  underscore@1.4.4:
+    resolution: {integrity: sha512-ZqGrAgaqqZM7LGRzNjLnw5elevWb5M8LEoDMadxIW3OWbcv72wMMgKdwOKpd5Fqxe8choLD8HN3iSj3TUh/giQ==}
 
   undici-types@7.12.0:
     resolution: {integrity: sha512-goOacqME2GYyOZZfb5Lgtu+1IDmAlAEu5xnD3+xTzS10hT0vzpf0SPjkXwAw9Jm+4n/mQGDP3LO8CPbYROeBfQ==}
@@ -3275,6 +3317,8 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
+  bintrees@0.0.10: {}
+
   body-parser@2.2.0:
     dependencies:
       bytes: 3.1.2
@@ -3309,6 +3353,10 @@ snapshots:
       electron-to-chromium: 1.5.224
       node-releases: 2.0.21
       update-browserslist-db: 1.1.3(browserslist@4.26.2)
+
+  bson@0.1.8: {}
+
+  bson@0.1.9: {}
 
   buffer-from@1.1.2: {}
 
@@ -3980,6 +4028,10 @@ snapshots:
 
   mkdirp@1.0.4: {}
 
+  mongodb@1.2.14:
+    dependencies:
+      bson: 0.1.8
+
   ms@2.1.3: {}
 
   nanoid@3.3.11: {}
@@ -3991,6 +4043,8 @@ snapshots:
   negotiator@1.0.0: {}
 
   node-releases@2.0.21: {}
+
+  node-uuid@1.3.3: {}
 
   nodemon@3.1.10:
     dependencies:
@@ -4273,6 +4327,14 @@ snapshots:
 
   setprototypeof@1.2.0: {}
 
+  shared@0.2.0:
+    dependencies:
+      bintrees: 0.0.10
+      bson: 0.1.9
+      mongodb: 1.2.14
+      node-uuid: 1.3.3
+      underscore: 1.4.4
+
   shebang-command@2.0.0:
     dependencies:
       shebang-regex: 3.0.0
@@ -4508,6 +4570,8 @@ snapshots:
 
   tslib@2.8.1: {}
 
+  tw-animate-css@1.4.0: {}
+
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
@@ -4568,6 +4632,8 @@ snapshots:
       - yaml
 
   undefsafe@2.0.5: {}
+
+  underscore@1.4.4: {}
 
   undici-types@7.12.0: {}
 
