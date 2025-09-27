@@ -4,9 +4,10 @@ import path from "node:path";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import authRouter from "./endpoints/auth";
 import { testConnection } from "./postgres";
 import { connectRedis } from "./redis";
-import { initSocketServer } from "./websocket/socket"; // 👈 Import the new initializer
+import { initSocketServer } from "./websocket/socket";
 
 // Load environment variables from the root .env file
 dotenv.config({ path: path.resolve(__dirname, "../../client/.env") });
@@ -26,9 +27,14 @@ app.use(
   })
 );
 
+// Parse JSON request bodies
+app.use(express.json());
+
 app.get("/", (_req, res) => {
   res.send("Server is running!");
 });
+
+app.use("/auth", authRouter);
 
 const startServer = async () => {
   await connectRedis();
