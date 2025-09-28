@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { SignInPage } from "./features/auth/sign-in";
 import { Gallery } from "./features/gallery/gallery";
+import { Room } from "./features/room/room";
 import { useAuthStore } from "./stores/auth-store";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -22,6 +23,15 @@ function App() {
               </ProtectedRoute>
             }
             path="/"
+          />
+
+          <Route
+            element={
+              <ProtectedRoute>
+                <Room />
+              </ProtectedRoute>
+            }
+            path="/room/:roomId"
           />
         </Routes>
       </BrowserRouter>

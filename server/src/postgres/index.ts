@@ -17,18 +17,5 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
-export async function testConnection() {
-  const client = await pool.connect();
-  try {
-    const { rows } = await client.query("SELECT current_user");
-    const currentUser = rows[0]["current_user"];
-    console.log(`Connected as user: ${currentUser}`);
-  } catch (error) {
-    console.error("Postgres connection failed", error);
-  } finally {
-    client.release();
-  }
-}
-
 export const query = (text: string, params?: any[]) => pool.query(text, params);
 export default pool;

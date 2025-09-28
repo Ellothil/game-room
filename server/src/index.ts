@@ -5,7 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import authRouter from "./endpoints/auth";
-import { testConnection } from "./postgres";
+import gameRoomsRouter from "./endpoints/rooms";
 import { connectRedis } from "./redis";
 import { initSocketServer } from "./websocket/socket";
 
@@ -35,10 +35,10 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/rooms", gameRoomsRouter);
 
 const startServer = async () => {
   await connectRedis();
-  await testConnection();
 
   server.listen(PORT, () => {
     console.log(`🚀 Server listening on http://localhost:${PORT}`);

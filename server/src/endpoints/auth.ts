@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
 import { Router } from "express";
 import pool from "../postgres";
-import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR } from "./codes";
+import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR } from "./http-codes";
 
-const authRouter: Router = Router();
+const router: Router = Router();
 
-authRouter.post("/register", async (req, res) => {
+router.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
   if (!(username && password)) {
@@ -43,7 +43,7 @@ authRouter.post("/register", async (req, res) => {
   }
 });
 
-authRouter.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!(username && password)) {
@@ -72,4 +72,4 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-export default authRouter;
+export default router;
