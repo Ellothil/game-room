@@ -64,7 +64,11 @@ router.post("/login", async (req, res) => {
     if (!isPasswordValid) {
       return res.status(BAD_REQUEST).json({ error: "Invalid password" });
     }
-    res.json({ message: "Login successful" });
+    res.json({ 
+      message: "Login successful",
+      userId: user.id,
+      username: user.username
+    });
   } catch (error) {
     // Log error for debugging
     process.stderr.write(`Login error: ${error}\n`);

@@ -16,6 +16,13 @@ dotenv.config({
   path: join(__dirname, "../../../client/.env"),
 });
 
+type GameState = {
+  board: Array<"X" | "O" | null>;
+  currentPlayer: "X" | "O";
+  status: "waiting" | "playing" | "finished";
+  playerSymbols: Map<string, "X" | "O">;
+};
+
 const rooms: GameRoom[] = [
   {
     id: "tic-tac-toe-1",
@@ -29,11 +36,42 @@ const rooms: GameRoom[] = [
 // Track socket to user mapping for disconnect handling
 const socketToUserMap = new Map<string, { id: string; username: string }>();
 
+// Track game states for each room
+const gameStates = new Map<string, GameState>();
+
+// Tic-Tac-Toe board constants
+const boardSize = 9;
+const firstRowStart = 0;
+const firstRowMid = 1;
+const firstRowEnd = 2;
+const secondRowStart = 3;
+const secondRowMid = 4;
+const secondRowEnd = 5;
+const thirdRowStart = 6;
+const thirdRowMid = 7;
+const thirdRowEnd = 8;
+
+const winPatterns = [
+  [firstRowStart, firstRowMid, firstRowEnd],
+  [secondRowStart, secondRowMid, secondRowEnd],
+  [thirdRowStart, thirdRowMid, thirdRowEnd],
+  [firstRowStart, secondRowStart, thirdRowStart],
+  [firstRowMid, secondRowMid, thirdRowMid],
+  [firstRowEnd, secondRowEnd, thirdRowEnd],
+  [firstRowStart, secondRowMid, thirdRowEnd],
+  [firstRowEnd, secondRowMid, thirdRowStart],
+] as const;
+
 export function initSocketServer(server: HttpServer) {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
     cors: {
-      origin: `${process.env.VITE_CLIENT_URL}:${process.env.VITE_CLIENT_PORT}`,
+      origin: [
+        `${process.env.VITE_CLIENT_URL}:${process.env.VITE_CLIENT_PORT}`,
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+      ],
       methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 
@@ -73,7 +111,8 @@ export function initSocketServer(server: HttpServer) {
       room.players.push(player);
       socket.join(roomId);
       socket.emit("room:joined", room);
-      io.to(roomId).emit("room:playerJoined", { roomId, player });
+      // Broadcast to other players in the room, not to the joining player
+      socket.to(roomId).emit("room:playerJoined", { roomId, player });
       io.emit("room:list", rooms);
     });
 
@@ -95,6 +134,109 @@ export function initSocketServer(server: HttpServer) {
       io.emit("room:list", rooms);
     });
 
+    socket.on("game:start", (roomId) => {
+      const user = socketToUserMap.get(socket.id);
+      if (!user) {
+        return;
+      }
+
+      const room = rooms.find((r) => r.id === roomId);
+      if (!room) {
+        return;
+      }
+
+      // Only allow starting if room has exactly 2 players
+      if (room.players.length !== room.maxPlayers) {
+        socket.emit("game:error", {
+          message: "Need 2 players to start the game.",
+        });
+        return;
+      }
+
+      // Initialize game state
+      const playerSymbols = new Map<string, "X" | "O">();
+      playerSymbols.set(room.players[0].id, "X");
+      playerSymbols.set(room.players[1].id, "O");
+
+      gameStates.set(roomId, {
+        board: Array.from({ length: boardSize }).fill(null) as Array<"X" | "O" | null>,
+        currentPlayer: "X",
+        status: "playing",
+        playerSymbols,
+      });
+
+      // Notify all players in the room
+      io.to(roomId).emit("game:start", {
+        roomId,
+        gameType: "tic-tac-toe",
+        players: [
+          { playerId: room.players[0].id, symbol: "X" },
+          { playerId: room.players[1].id, symbol: "O" },
+        ],
+      });
+
+      console.log(`🎮 Game started in room ${roomId}`);
+    });
+
+    socket.on("game:move", ({ roomId, moveData }) => {
+      const user = socketToUserMap.get(socket.id);
+      if (!user) {
+        return;
+      }
+
+      const gameState = gameStates.get(roomId);
+      if (!gameState) {
+        socket.emit("game:error", { message: "Game not started." });
+        return;
+      }
+
+      // Verify it's the player's turn
+      const playerSymbol = gameState.playerSymbols.get(user.id);
+      if (!playerSymbol) {
+        socket.emit("game:error", { message: "You are not a player." });
+        return;
+      }
+      
+      if (playerSymbol !== gameState.currentPlayer) {
+        socket.emit("game:error", { message: "Not your turn." });
+        return;
+      }
+
+      // Verify the move is valid
+      if (gameState.board[moveData.index]) {
+        socket.emit("game:error", { message: "Cell already occupied." });
+        return;
+      }
+
+      // Make the move
+      gameState.board[moveData.index] = playerSymbol;
+      gameState.currentPlayer = playerSymbol === "X" ? "O" : "X";
+
+      // Check for winner
+      const winner = checkWinner(gameState.board);
+      const isBoardFull = gameState.board.every((cell) => cell !== null);
+      const gameEnded = winner || isBoardFull;
+
+      if (gameEnded) {
+        gameState.status = "finished";
+        io.to(roomId).emit("game:end", {
+          roomId,
+          winner: winner || "draw",
+          board: gameState.board,
+        });
+        gameStates.delete(roomId);
+        return;
+      }
+      
+      // Broadcast the move to all players in the room
+      io.to(roomId).emit("game:move", {
+        roomId,
+        move: moveData,
+        board: gameState.board,
+        currentPlayer: gameState.currentPlayer,
+      });
+    });
+
     socket.on("disconnect", () => {
       console.log(`🔥 User disconnected: ${socket.id}`);
 
@@ -110,6 +252,8 @@ export function initSocketServer(server: HttpServer) {
               playerId: user.id,
             });
             io.emit("room:list", rooms);
+            // Clear game state if exists
+            gameStates.delete(room.id);
             break; // A user can only be in one room at a time
           }
         }
@@ -120,4 +264,16 @@ export function initSocketServer(server: HttpServer) {
 
   console.log("✅ Socket.IO server initialized");
   return io;
+}
+
+// Helper function to check for a winner
+function checkWinner(board: Array<"X" | "O" | null>): "X" | "O" | null {
+  for (const pattern of winPatterns) {
+    const [a, b, c] = pattern;
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return board[a];
+    }
+  }
+
+  return null;
 }

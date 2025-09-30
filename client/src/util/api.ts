@@ -6,7 +6,7 @@ const UNAUTHORIZED_STATUS = 401;
 // Create axios instance with base URL
 export const api = axios.create({
   // biome-ignore lint: axios requires baseURL property name
-  baseURL: "http://localhost:4001",
+  baseURL: import.meta.env.VITE_SERVER_URL,
   timeout: API_TIMEOUT,
   headers: {
     "Content-Type": "application/json",

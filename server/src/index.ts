@@ -22,8 +22,13 @@ const PORT = process.env.PORT;
 
 app.use(
   cors({
-    origin: `${process.env.VITE_CLIENT_URL}:${process.env.VITE_CLIENT_PORT}`,
+    origin: [
+      `${process.env.VITE_CLIENT_URL}:${process.env.VITE_CLIENT_PORT}`,
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+    ],
     methods: ["GET", "POST"],
+    credentials: true,
   })
 );
 
@@ -40,8 +45,11 @@ app.use("/rooms", gameRoomsRouter);
 const startServer = async () => {
   await connectRedis();
 
-  server.listen(PORT, () => {
-    console.log(`🚀 Server listening on http://localhost:${PORT}`);
+  const port = Number(PORT);
+  server.listen(port, "0.0.0.0", () => {
+    console.log(`🚀 Server listening on http://0.0.0.0:${port}`);
+    console.log(`   Local: http://localhost:${port}`);
+    console.log(`   Network: http://${process.env.PUBLIC_IP}:${port}`);
   });
 };
 
