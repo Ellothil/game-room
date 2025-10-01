@@ -18,14 +18,16 @@ router.post("/register", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username",
+      "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username, display_name, profile_completed",
       [username, hashedPassword]
     );
     const user = result.rows[0];
     res.status(CREATED).json({ 
       message: "User registered successfully",
       userId: user.id,
-      username: user.username
+      username: user.username,
+      displayName: user.display_name,
+      profileCompleted: user.profile_completed
     });
   } catch (error) {
     // Handle PostgreSQL unique constraint violation (duplicate username)
@@ -58,9 +60,13 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
-      username,
-    ]);
+    const result = await pool.query(
+      `SELECT u.*, pp.file_path as profile_picture 
+       FROM users u 
+       LEFT JOIN profile_pictures pp ON u.current_profile_picture_id = pp.id 
+       WHERE u.username = $1`,
+      [username]
+    );
     const user = result.rows[0];
     if (!user) {
       return res.status(BAD_REQUEST).json({ error: "User not found" });
@@ -72,7 +78,10 @@ router.post("/login", async (req, res) => {
     res.json({ 
       message: "Login successful",
       userId: user.id,
-      username: user.username
+      username: user.username,
+      displayName: user.display_name,
+      profilePicture: user.profile_picture,
+      profileCompleted: user.profile_completed
     });
   } catch (error) {
     // Log error for debugging

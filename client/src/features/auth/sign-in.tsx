@@ -22,6 +22,9 @@ export function SignInPage() {
         login(response.data.token || "mock-token", {
           username,
           id: response.data.userId || "1",
+          displayName: response.data.displayName,
+          profilePicture: response.data.profilePicture,
+          profileCompleted: response.data.profileCompleted,
         });
         toast(response.data.message);
         navigate("/");
@@ -32,6 +35,9 @@ export function SignInPage() {
         login(response.data.token || "mock-token", {
           username: response.data.username,
           id: response.data.userId,
+          displayName: response.data.displayName,
+          profilePicture: response.data.profilePicture,
+          profileCompleted: response.data.profileCompleted,
         });
         navigate("/");
       }

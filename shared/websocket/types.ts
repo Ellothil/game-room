@@ -27,6 +27,8 @@ export type SocketData = {
 export type Player = {
   id: string;
   username: string;
+  profilePicture?: string;
+  joinedAt?: number; // Timestamp when player joined the room
 };
 
 export type GameRoom = {

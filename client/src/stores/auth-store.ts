@@ -4,6 +4,9 @@ import { persist } from "zustand/middleware";
 type User = {
   username: string;
   id: string;
+  displayName?: string;
+  profilePicture?: string;
+  profileCompleted?: boolean;
 };
 
 type AuthState = {
@@ -12,6 +15,7 @@ type AuthState = {
   user: User | null;
   login: (token: string, user: User) => void;
   logout: () => void;
+  updateProfile: (updates: Partial<User>) => void;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -25,6 +29,11 @@ export const useAuthStore = create<AuthState>()(
       },
       logout: () => {
         set({ isAuthenticated: false, token: null, user: null });
+      },
+      updateProfile: (updates: Partial<User>) => {
+        set((state) => ({
+          user: state.user ? { ...state.user, ...updates } : null,
+        }));
       },
     }),
     {

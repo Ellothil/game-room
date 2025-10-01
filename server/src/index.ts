@@ -5,6 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import authRouter from "./endpoints/auth";
+import profileRouter from "./endpoints/profile";
 import gameRoomsRouter from "./endpoints/rooms";
 import { connectRedis } from "./redis";
 import { initSocketServer } from "./websocket/socket";
@@ -27,7 +28,7 @@ app.use(
       'http://localhost:5173',
       'http://127.0.0.1:5173',
     ],
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
@@ -35,11 +36,15 @@ app.use(
 // Parse JSON request bodies
 app.use(express.json());
 
+// Serve static files for profile pictures
+app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
+
 app.get("/", (_req, res) => {
   res.send("Server is running!");
 });
 
 app.use("/auth", authRouter);
+app.use("/profile", profileRouter);
 app.use("/rooms", gameRoomsRouter);
 
 const startServer = async () => {

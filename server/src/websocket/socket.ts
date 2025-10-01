@@ -107,7 +107,7 @@ export function initSocketServer(server: HttpServer) {
         return;
       }
 
-      const player: Player = { ...user, id: user.id };
+      const player: Player = { ...user, id: user.id, joinedAt: Date.now() };
       room.players.push(player);
       socket.join(roomId);
       socket.emit("room:joined", room);

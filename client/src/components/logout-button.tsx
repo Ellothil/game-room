@@ -2,8 +2,9 @@ import { GiExitDoor } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
+import { cn } from "@/util/tw-merge";
 
-export function LogoutButton() {
+export function LogoutButton({ className }: { className?: string }) {
   const navigate = useNavigate();
   const { logout } = useAuthStore();
 
@@ -15,7 +16,10 @@ export function LogoutButton() {
 
   return (
     <button
-      className="flex size-10 items-center justify-center rounded-full bg-destructive p-2 text-destructive-foreground hover:bg-destructive/80"
+      className={cn(
+        "flex size-10 items-center justify-center rounded-full bg-destructive p-2 hover:bg-destructive/80",
+        className
+      )}
       onClick={handleLogout}
       type="button"
     >

@@ -1,8 +1,8 @@
 import type { GameRoom } from "shared/websocket/types";
 import { useAuthStore } from "../../stores/auth-store";
-import { useGameStore } from "../../stores/game-store";
 import { socket } from "../../websocket/socket";
-import { TicTacToeBoard } from "../game/tic-tac-toe";
+import { TicTacToeBoard } from "../games/tic-tac-toe/board";
+import { useTicTacToeStore } from "../games/tic-tac-toe/store";
 
 type RoomProps = {
   room: GameRoom;
@@ -11,9 +11,7 @@ type RoomProps = {
 
 export function Room({ room, onLeave }: RoomProps) {
   const user = useAuthStore((state) => state.user);
-  const { status, currentPlayer, playerSymbol } = useGameStore(
-    (state) => state.ticTacToe
-  );
+  const { status, currentPlayer, playerSymbol } = useTicTacToeStore();
 
   const handleLeaveRoom = () => {
     socket.emit("room:leave", room.id);

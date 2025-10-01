@@ -12,6 +12,6 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <App />
-    <Toaster duration={5000} position="top-right" richColors theme="dark" />
+    <Toaster duration={5000} position="bottom-left" richColors theme="dark" />
   </StrictMode>
 );
