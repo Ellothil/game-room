@@ -1,16 +1,24 @@
 import { useEffect } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import type { GameRoom } from "shared/websocket/types";
 import { toast } from "sonner";
 import { SignInPage } from "./features/auth/sign-in";
 import { Gallery } from "./features/gallery/gallery";
 import { registerTicTacToeEventHandlers } from "./features/games/tic-tac-toe/event-handlers";
+import { TicTacToeGamePage } from "./features/games/tic-tac-toe/game-page";
 import { useAuthStore } from "./stores/auth-store";
 import { useRoomStore } from "./stores/room-store";
 import { socket } from "./websocket/socket";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -77,7 +85,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
     // Game event listeners
     const getCurrentUserId = () => useAuthStore.getState().user?.id;
-    const ticTacToeHandlers = registerTicTacToeEventHandlers(getCurrentUserId);
+    const ticTacToeHandlers = registerTicTacToeEventHandlers(
+      getCurrentUserId,
+      navigate
+    );
 
     // Register all listeners
     socket.on("room:list", handleRoomList);
@@ -106,7 +117,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
       socket.disconnect();
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
   return isAuthenticated ? children : <Navigate replace to="/signin" />;
 }
@@ -125,6 +136,15 @@ function App() {
               </ProtectedRoute>
             }
             path="/"
+          />
+
+          <Route
+            element={
+              <ProtectedRoute>
+                <TicTacToeGamePage />
+              </ProtectedRoute>
+            }
+            path="/game/tic-tac-toe/:roomId"
           />
         </Routes>
       </BrowserRouter>

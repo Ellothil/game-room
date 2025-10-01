@@ -27,6 +27,22 @@ export function Room({ room, onLeave }: RoomProps) {
     playerSymbol !== null &&
     currentPlayer === playerSymbol &&
     status === "playing";
+  
+  // Game master is the first player in the room
+  const gameMaster = room.players[0];
+  const isGameMaster = user?.id === gameMaster?.id;
+
+  const getWaitingMessage = () => {
+    if (!isRoomFull) {
+      return `Waiting for ${room.maxPlayers - room.players.length} more player(s)...`;
+    }
+    
+    if (isGameMaster) {
+      return "All players ready! Start the game when ready.";
+    }
+    
+    return "Waiting for game master to start the game...";
+  };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-8">
@@ -37,15 +53,22 @@ export function Room({ room, onLeave }: RoomProps) {
             <div className="rounded-lg bg-muted p-3">
               <h2 className="mb-2 font-semibold text-sm">Players:</h2>
               <ul className="space-y-1">
-                {room.players.map((player) => (
+                {room.players.map((player, index) => (
                   <li
                     className={`text-sm ${player.id === user?.id ? "font-bold text-primary" : ""}`}
                     key={player.id}
                   >
-                    {player.username} {player.id === user?.id && "(You)"}
+                    {player.username}
+                    {player.id === user?.id && " (You)"}
+                    {index === 0 && " 👑"}
                   </li>
                 ))}
               </ul>
+              {gameMaster && (
+                <p className="mt-2 text-muted-foreground text-xs">
+                  👑 = Game Master
+                </p>
+              )}
             </div>
           </div>
         </header>
@@ -54,11 +77,9 @@ export function Room({ room, onLeave }: RoomProps) {
           {status === "waiting" ? (
             <div className="text-center">
               <p className="mb-4 text-muted-foreground">
-                {isRoomFull
-                  ? "All players ready! Start the game when ready."
-                  : `Waiting for ${room.maxPlayers - room.players.length} more player(s)...`}
+                {getWaitingMessage()}
               </p>
-              {isRoomFull && (
+              {isRoomFull && isGameMaster && (
                 <button
                   className="rounded-lg bg-primary px-6 py-3 font-semibold hover:bg-primary/80"
                   onClick={handleStartGame}

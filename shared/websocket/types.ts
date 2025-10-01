@@ -9,6 +9,7 @@ export type ServerToClientEvents = {
   "game:move": (payload: GameMovePayload) => void;
   "game:end": (payload: GameEndPayload) => void;
   "game:error": (payload: { message: string }) => void;
+  "game:rematch": (payload: GameStartPayload) => void;
 };
 
 export type ClientToServerEvents = {
@@ -17,6 +18,7 @@ export type ClientToServerEvents = {
   "room:list": () => void;
   "game:start": (roomId: string) => void;
   "game:move": (payload: { roomId: string; moveData: TicTacToeMove }) => void;
+  "game:rematch": (roomId: string) => void;
 };
 
 export type SocketData = {

@@ -63,6 +63,67 @@ const winPatterns = [
   [firstRowEnd, secondRowMid, thirdRowStart],
 ] as const;
 
+// Helper function to check for a winner
+function checkWinner(board: Array<"X" | "O" | null>): "X" | "O" | null {
+  for (const pattern of winPatterns) {
+    const [a, b, c] = pattern;
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return board[a];
+    }
+  }
+
+  return null;
+}
+
+// Helper function to handle player disconnection
+function handleDisconnect(
+  socketId: string,
+  io: Server<ClientToServerEvents, ServerToClientEvents>
+) {
+  console.log(`🔥 User disconnected: ${socketId}`);
+
+  const user = socketToUserMap.get(socketId);
+  if (!user) {
+    return;
+  }
+
+  // Remove user from all rooms they're in
+  for (const room of rooms) {
+    const playerIndex = room.players.findIndex((p) => p.id === user.id);
+    if (playerIndex === -1) {
+      continue;
+    }
+
+    room.players.splice(playerIndex, 1);
+
+    // If game is playing, declare remaining player as winner
+    const gameState = gameStates.get(room.id);
+    if (gameState && gameState.status === "playing") {
+      const remainingPlayer = room.players[0];
+      if (remainingPlayer) {
+        const winnerSymbol = gameState.playerSymbols.get(remainingPlayer.id);
+        io.to(room.id).emit("game:end", {
+          roomId: room.id,
+          winner: winnerSymbol || "draw",
+          board: gameState.board,
+        });
+      }
+    }
+
+    io.to(room.id).emit("room:playerLeft", {
+      roomId: room.id,
+      playerId: user.id,
+    });
+    io.emit("room:list", rooms);
+
+    // Clear game state
+    gameStates.delete(room.id);
+    break; // A user can only be in one room at a time
+  }
+
+  socketToUserMap.delete(socketId);
+}
+
 export function initSocketServer(server: HttpServer) {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
     cors: {
@@ -176,6 +237,15 @@ export function initSocketServer(server: HttpServer) {
         return;
       }
 
+      // Only allow the game master (first player) to start the game
+      const gameMaster = room.players[0];
+      if (user.id !== gameMaster.id) {
+        socket.emit("game:error", {
+          message: "Only the game master can start the game.",
+        });
+        return;
+      }
+
       // Initialize game state
       const playerSymbols = new Map<string, "X" | "O">();
       playerSymbols.set(room.players[0].id, "X");
@@ -249,7 +319,7 @@ export function initSocketServer(server: HttpServer) {
           winner: winner || "draw",
           board: gameState.board,
         });
-        gameStates.delete(roomId);
+        // Keep game state for rematch instead of deleting
         return;
       }
 
@@ -262,43 +332,57 @@ export function initSocketServer(server: HttpServer) {
       });
     });
 
-    socket.on("disconnect", () => {
-      console.log(`🔥 User disconnected: ${socket.id}`);
-
+    socket.on("game:rematch", (roomId) => {
       const user = socketToUserMap.get(socket.id);
-      if (user) {
-        // Remove user from all rooms they're in
-        for (const room of rooms) {
-          const playerIndex = room.players.findIndex((p) => p.id === user.id);
-          if (playerIndex > -1) {
-            room.players.splice(playerIndex, 1);
-            io.to(room.id).emit("room:playerLeft", {
-              roomId: room.id,
-              playerId: user.id,
-            });
-            io.emit("room:list", rooms);
-            // Clear game state if exists
-            gameStates.delete(room.id);
-            break; // A user can only be in one room at a time
-          }
-        }
-        socketToUserMap.delete(socket.id);
+      if (!user) {
+        return;
       }
+
+      const room = rooms.find((r) => r.id === roomId);
+      if (!room) {
+        return;
+      }
+
+      // Ensure room has exactly 2 players
+      if (room.players.length !== room.maxPlayers) {
+        socket.emit("game:error", {
+          message: "Need 2 players for a rematch.",
+        });
+        return;
+      }
+
+      // Reset game state
+      const playerSymbols = new Map<string, "X" | "O">();
+      playerSymbols.set(room.players[0].id, "X");
+      playerSymbols.set(room.players[1].id, "O");
+
+      gameStates.set(roomId, {
+        board: Array.from({ length: boardSize }).fill(null) as Array<
+          "X" | "O" | null
+        >,
+        currentPlayer: "X",
+        status: "playing",
+        playerSymbols,
+      });
+
+      // Notify players that a new game has started
+      io.to(roomId).emit("game:rematch", {
+        roomId,
+        gameType: "tic-tac-toe",
+        players: [
+          { playerId: room.players[0].id, symbol: "X" },
+          { playerId: room.players[1].id, symbol: "O" },
+        ],
+      });
+
+      console.log(`🔄 Game rematch in room ${roomId}`);
+    });
+
+    socket.on("disconnect", () => {
+      handleDisconnect(socket.id, io);
     });
   });
 
   console.log("✅ Socket.IO server initialized");
   return io;
-}
-
-// Helper function to check for a winner
-function checkWinner(board: Array<"X" | "O" | null>): "X" | "O" | null {
-  for (const pattern of winPatterns) {
-    const [a, b, c] = pattern;
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return board[a];
-    }
-  }
-
-  return null;
 }

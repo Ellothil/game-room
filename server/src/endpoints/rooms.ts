@@ -6,7 +6,7 @@ const router: Router = Router();
 
 const rooms: GameRoom[] = [
   {
-    id: "tic-tac-toe-1",
+    id: "tic-tac-toe",
     name: "Tic Tac Toe",
     players: [],
     maxPlayers: 2,
