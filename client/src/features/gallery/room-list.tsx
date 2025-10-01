@@ -58,12 +58,12 @@ export function RoomList() {
             key={room.id}
           >
             {/* Room Header */}
-            <div className="grid grid-cols-13 items-center justify-between gap-4">
+            <div className="grid grid-cols-12 items-center justify-between gap-4">
               {/* Room Name */}
-              <h2 className="col-span-5 font-bold text-xl">{room.name}</h2>
+              <h2 className="col-span-4 font-bold text-xl">{room.name}</h2>
               <div className="col-span-5 flex items-center gap-6">
                 {/* Game Master Column */}
-                <div className="col-span-2 flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   {gameMaster ? (
                     <>
                       <FaCrown className="text-yellow-500" size={24} />
@@ -86,7 +86,7 @@ export function RoomList() {
                 </div>
 
                 {/* Regular Players Column */}
-                <div className="col-span-5 flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <FaUser size={24} />
                   <div className="-space-x-2 flex">
                     {regularPlayers?.length === 0 && (
@@ -106,7 +106,7 @@ export function RoomList() {
               </div>
 
               {/* Numbers */}
-              <div className="flex items-center justify-end">
+              <div className="col-span-1 flex items-center justify-end">
                 {room.players.length}/{room.maxPlayers}
               </div>
 
@@ -114,7 +114,7 @@ export function RoomList() {
               <button
                 className={
                   isUserInThisRoom
-                    ? "col-span-2 rounded-lg bg-destructive px-3 py-2 text-destructive-foreground hover:bg-destructive/80"
+                    ? "col-span-2 rounded-lg bg-destructive px-3 py-2 text-destructive-foreground hover:bg-destructive/80 disabled:cursor-not-allowed"
                     : "col-span-2 rounded-lg bg-primary px-3 py-2 hover:bg-primary/80 disabled:cursor-not-allowed disabled:opacity-50"
                 }
                 disabled={isDisabled}

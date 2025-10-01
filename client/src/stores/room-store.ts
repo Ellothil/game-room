@@ -24,8 +24,7 @@ export const useRoomStore = create<RoomState>()((set) => ({
     set((state) => ({
       rooms: state.rooms.map((r) => (r.id === room.id ? room : r)),
       // Update currentRoom if it's the room being updated
-      currentRoom:
-        state.currentRoom?.id === room.id ? room : state.currentRoom,
+      currentRoom: state.currentRoom?.id === room.id ? room : state.currentRoom,
     })),
   setCurrentRoom: (room) => set({ currentRoom: room }),
 }));

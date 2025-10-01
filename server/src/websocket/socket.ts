@@ -10,6 +10,7 @@ import type {
   ServerToClientEvents,
 } from "shared/websocket/types";
 import { Server } from "socket.io";
+import pool from "../postgres";
 
 dotenv.config({
   override: true,
@@ -82,7 +83,7 @@ export function initSocketServer(server: HttpServer) {
       socket.emit("room:list", rooms);
     });
 
-    socket.on("room:join", (roomId, user) => {
+    socket.on("room:join", async (roomId, user) => {
       socketToUserMap.set(socket.id, user);
 
       const existingRoom = rooms.find((r) =>
@@ -107,7 +108,29 @@ export function initSocketServer(server: HttpServer) {
         return;
       }
 
-      const player: Player = { ...user, id: user.id, joinedAt: Date.now() };
+      // Fetch fresh user data from database to get current profile picture
+      let profilePicture = user.profilePicture;
+      try {
+        const userResult = await pool.query(
+          `SELECT pp.file_path as profile_picture
+           FROM users u
+           LEFT JOIN profile_pictures pp ON u.current_profile_picture_id = pp.id
+           WHERE u.id = $1`,
+          [user.id]
+        );
+        if (userResult.rows[0]?.profile_picture) {
+          profilePicture = userResult.rows[0].profile_picture;
+        }
+      } catch (error) {
+        console.error("Error fetching user profile picture:", error);
+      }
+
+      const player: Player = {
+        id: user.id,
+        username: user.username,
+        profilePicture,
+        joinedAt: Date.now(),
+      };
       room.players.push(player);
       socket.join(roomId);
       socket.emit("room:joined", room);

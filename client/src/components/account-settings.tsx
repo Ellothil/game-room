@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/useNamingConvention: PostgreSQL column names */
 import { useCallback, useEffect, useState } from "react";
 import { MdClose, MdDelete, MdUpload } from "react-icons/md";
 import { toast } from "sonner";
@@ -34,16 +35,17 @@ export function AccountSettings({ onClose }: AccountSettingsProps) {
   const loadPictures = useCallback(async () => {
     try {
       const response = await getProfilePictures(user?.id || "");
+      // API returns snake_case from PostgreSQL
       type ApiPicture = {
         id: string;
-        filePath: string;
-        uploadedAt: string;
+        file_path: string;
+        uploaded_at: string;
       };
       setPictures(
         response.data.pictures.map((p: ApiPicture) => ({
           id: p.id,
-          filePath: p.filePath,
-          uploadedAt: p.uploadedAt,
+          filePath: p.file_path,
+          uploadedAt: p.uploaded_at,
         }))
       );
     } catch {

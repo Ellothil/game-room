@@ -1,7 +1,9 @@
 import { toast } from "sonner";
 import { useTicTacToeStore } from "./store";
 
-export function registerTicTacToeEventHandlers(getCurrentUserId: () => string | undefined) {
+export function registerTicTacToeEventHandlers(
+  getCurrentUserId: () => string | undefined
+) {
   const handleGameStart = (payload: {
     players: Array<{ playerId: string; symbol: "X" | "O" }>;
   }) => {

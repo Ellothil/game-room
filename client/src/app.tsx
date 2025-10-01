@@ -85,7 +85,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     socket.on("room:join:error", handleJoinError);
     socket.on("room:playerJoined", handlePlayerJoined);
     socket.on("room:playerLeft", handlePlayerLeft);
-    
+
     // Register tic-tac-toe specific event handlers
     for (const [event, handler] of Object.entries(ticTacToeHandlers)) {
       socket.on(event as never, handler as never);
@@ -98,12 +98,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       socket.off("room:join:error", handleJoinError);
       socket.off("room:playerJoined", handlePlayerJoined);
       socket.off("room:playerLeft", handlePlayerLeft);
-      
+
       // Cleanup tic-tac-toe event handlers
       for (const [event, handler] of Object.entries(ticTacToeHandlers)) {
         socket.off(event as never, handler as never);
       }
-      
+
       socket.disconnect();
     };
   }, [isAuthenticated]);

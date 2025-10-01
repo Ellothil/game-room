@@ -22,12 +22,12 @@ router.post("/register", async (req, res) => {
       [username, hashedPassword]
     );
     const user = result.rows[0];
-    res.status(CREATED).json({ 
+    res.status(CREATED).json({
       message: "User registered successfully",
       userId: user.id,
       username: user.username,
       displayName: user.display_name,
-      profileCompleted: user.profile_completed
+      profileCompleted: user.profile_completed,
     });
   } catch (error) {
     // Handle PostgreSQL unique constraint violation (duplicate username)
@@ -75,13 +75,13 @@ router.post("/login", async (req, res) => {
     if (!isPasswordValid) {
       return res.status(BAD_REQUEST).json({ error: "Invalid password" });
     }
-    res.json({ 
+    res.json({
       message: "Login successful",
       userId: user.id,
       username: user.username,
       displayName: user.display_name,
       profilePicture: user.profile_picture,
-      profileCompleted: user.profile_completed
+      profileCompleted: user.profile_completed,
     });
   } catch (error) {
     // Log error for debugging
