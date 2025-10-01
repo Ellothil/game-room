@@ -67,8 +67,8 @@ export function initSocketServer(server: HttpServer) {
     cors: {
       origin: [
         `${process.env.VITE_CLIENT_URL}:${process.env.VITE_CLIENT_PORT}`,
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
       ],
       methods: ["GET", "POST"],
       credentials: true,
@@ -159,7 +159,9 @@ export function initSocketServer(server: HttpServer) {
       playerSymbols.set(room.players[1].id, "O");
 
       gameStates.set(roomId, {
-        board: Array.from({ length: boardSize }).fill(null) as Array<"X" | "O" | null>,
+        board: Array.from({ length: boardSize }).fill(null) as Array<
+          "X" | "O" | null
+        >,
         currentPlayer: "X",
         status: "playing",
         playerSymbols,
@@ -196,7 +198,7 @@ export function initSocketServer(server: HttpServer) {
         socket.emit("game:error", { message: "You are not a player." });
         return;
       }
-      
+
       if (playerSymbol !== gameState.currentPlayer) {
         socket.emit("game:error", { message: "Not your turn." });
         return;
@@ -227,7 +229,7 @@ export function initSocketServer(server: HttpServer) {
         gameStates.delete(roomId);
         return;
       }
-      
+
       // Broadcast the move to all players in the room
       io.to(roomId).emit("game:move", {
         roomId,

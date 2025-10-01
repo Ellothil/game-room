@@ -26,7 +26,9 @@ export function Room({ room, onLeave }: RoomProps) {
 
   const isRoomFull = room.players.length === room.maxPlayers;
   const isMyTurn =
-    playerSymbol !== null && currentPlayer === playerSymbol && status === "playing";
+    playerSymbol !== null &&
+    currentPlayer === playerSymbol &&
+    status === "playing";
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-8">

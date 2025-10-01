@@ -17,11 +17,16 @@ router.post("/register", async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    await pool.query(
-      "INSERT INTO users (username, password_hash) VALUES ($1, $2)",
+    const result = await pool.query(
+      "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username",
       [username, hashedPassword]
     );
-    res.status(CREATED).json({ message: "User registered successfully" });
+    const user = result.rows[0];
+    res.status(CREATED).json({ 
+      message: "User registered successfully",
+      userId: user.id,
+      username: user.username
+    });
   } catch (error) {
     // Handle PostgreSQL unique constraint violation (duplicate username)
     if (error instanceof Error && "code" in error) {

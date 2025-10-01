@@ -28,8 +28,12 @@ export function SignInPage() {
       } else {
         const response = await registerUser(username, password);
         toast(response.data.message);
-        // After successful registration, switch to sign in
-        setIsSignIn(true);
+        // Automatically log in the user after successful registration
+        login(response.data.token || "mock-token", {
+          username: response.data.username,
+          id: response.data.userId,
+        });
+        navigate("/");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
