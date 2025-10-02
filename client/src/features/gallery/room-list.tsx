@@ -3,12 +3,10 @@ import { ProfilePicture } from "@/components/profile-picture";
 import { useAuthStore } from "@/stores/auth-store";
 import { useRoomStore } from "@/stores/room-store";
 import { socket } from "@/websocket/socket";
-import { useTicTacToeStore } from "../games/tic-tac-toe/store";
 
 export function RoomList() {
   const rooms = useRoomStore((state) => state.rooms);
   const user = useAuthStore((state) => state.user);
-  const { status } = useTicTacToeStore();
 
   const handleJoinClick = (roomId: string) => {
     if (user) {

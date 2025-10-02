@@ -1,8 +1,6 @@
 import type { GameRoom } from "shared/websocket/types";
 import { useAuthStore } from "../../stores/auth-store";
 import { socket } from "../../websocket/socket";
-import { TicTacToeBoard } from "../games/tic-tac-toe/board";
-import { useTicTacToeStore } from "../games/tic-tac-toe/store";
 
 type RoomProps = {
   room: GameRoom;
@@ -11,7 +9,6 @@ type RoomProps = {
 
 export function Room({ room, onLeave }: RoomProps) {
   const user = useAuthStore((state) => state.user);
-  const { status, currentPlayer, playerSymbol } = useTicTacToeStore();
 
   const handleLeaveRoom = () => {
     socket.emit("room:leave", room.id);
@@ -23,11 +20,7 @@ export function Room({ room, onLeave }: RoomProps) {
   };
 
   const isRoomFull = room.players.length === room.maxPlayers;
-  const isMyTurn =
-    playerSymbol !== null &&
-    currentPlayer === playerSymbol &&
-    status === "playing";
-  
+
   // Game master is the first player in the room
   const gameMaster = room.players[0];
   const isGameMaster = user?.id === gameMaster?.id;
@@ -36,11 +29,11 @@ export function Room({ room, onLeave }: RoomProps) {
     if (!isRoomFull) {
       return `Waiting for ${room.maxPlayers - room.players.length} more player(s)...`;
     }
-    
+
     if (isGameMaster) {
       return "All players ready! Start the game when ready.";
     }
-    
+
     return "Waiting for game master to start the game...";
   };
 
@@ -90,7 +83,7 @@ export function Room({ room, onLeave }: RoomProps) {
               )}
             </div>
           ) : (
-            <TicTacToeBoard isMyTurn={isMyTurn} roomId={room.id} />
+            <div />
           )}
         </main>
 

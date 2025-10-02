@@ -10,8 +10,6 @@ import type { GameRoom } from "shared/websocket/types";
 import { toast } from "sonner";
 import { SignInPage } from "./features/auth/sign-in";
 import { Gallery } from "./features/gallery/gallery";
-import { registerTicTacToeEventHandlers } from "./features/games/tic-tac-toe/event-handlers";
-import { TicTacToeGamePage } from "./features/games/tic-tac-toe/game-page";
 import { useAuthStore } from "./stores/auth-store";
 import { useRoomStore } from "./stores/room-store";
 import { socket } from "./websocket/socket";
@@ -83,24 +81,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Game event listeners
-    const getCurrentUserId = () => useAuthStore.getState().user?.id;
-    const ticTacToeHandlers = registerTicTacToeEventHandlers(
-      getCurrentUserId,
-      navigate
-    );
-
     // Register all listeners
     socket.on("room:list", handleRoomList);
     socket.on("room:joined", handleRoomJoined);
     socket.on("room:join:error", handleJoinError);
     socket.on("room:playerJoined", handlePlayerJoined);
     socket.on("room:playerLeft", handlePlayerLeft);
-
-    // Register tic-tac-toe specific event handlers
-    for (const [event, handler] of Object.entries(ticTacToeHandlers)) {
-      socket.on(event as never, handler as never);
-    }
 
     // Cleanup on unmount or authentication change
     return () => {
@@ -109,11 +95,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       socket.off("room:join:error", handleJoinError);
       socket.off("room:playerJoined", handlePlayerJoined);
       socket.off("room:playerLeft", handlePlayerLeft);
-
-      // Cleanup tic-tac-toe event handlers
-      for (const [event, handler] of Object.entries(ticTacToeHandlers)) {
-        socket.off(event as never, handler as never);
-      }
 
       socket.disconnect();
     };
@@ -136,15 +117,6 @@ function App() {
               </ProtectedRoute>
             }
             path="/"
-          />
-
-          <Route
-            element={
-              <ProtectedRoute>
-                <TicTacToeGamePage />
-              </ProtectedRoute>
-            }
-            path="/game/tic-tac-toe/:roomId"
           />
         </Routes>
       </BrowserRouter>

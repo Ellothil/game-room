@@ -17,7 +17,6 @@ export type ClientToServerEvents = {
   "room:leave": (roomId: string) => void;
   "room:list": () => void;
   "game:start": (roomId: string) => void;
-  "game:move": (payload: { roomId: string; moveData: TicTacToeMove }) => void;
   "game:rematch": (roomId: string) => void;
 };
 
@@ -38,32 +37,5 @@ export type GameRoom = {
   name: string;
   players: Player[];
   maxPlayers: number;
-  gameType: "tic-tac-toe";
-};
-
-export type TicTacToeMove = {
-  index: number;
-  playerId: string;
-};
-
-export type GameStartPayload = {
-  roomId: string;
-  gameType: "tic-tac-toe";
-  players: {
-    playerId: string;
-    symbol: "X" | "O";
-  }[];
-};
-
-export type GameMovePayload = {
-  roomId: string;
-  move: TicTacToeMove;
-  board: Array<"X" | "O" | null>;
-  currentPlayer: "X" | "O";
-};
-
-export type GameEndPayload = {
-  roomId: string;
-  winner: "X" | "O" | "draw";
-  board: Array<"X" | "O" | null>;
+  gameType: string;
 };
